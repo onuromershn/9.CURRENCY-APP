@@ -1,9 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../css/Currency.css'
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
+import axios from 'axios';
+
+
+let BASE_URL =  "https://api.freecurrencyapi.com/v1/latest";
+let API_KEY = "your_api_key_from_https://freecurrencyapi.com/";
 
 
 function Currency() {
+
+  const [amount,setAmount] = useState(0);
+  const [fromCurrency,setFromCurrency] = useState('USD');
+  const [toCurrency,setToCurrency] = useState('TRY');
+  const [result,setResult] = useState(0);
+
+  const exchange = async () => {
+    const response = await axios.get(`${BASE_URL}?apikey=${API_KEY}&base_currency=${fromCurrency}`);
+    const result = ((response.data.data[toCurrency]) * amount).toFixed(2);
+    setResult(result);
+  }
+
   return (
     <div className='currency-div'>
 
@@ -12,26 +29,26 @@ function Currency() {
         </div>
         
         <div className='currency-calculate'>
-            <input type="number" className='amount'/>
-            <select className='from-currency-option' name="" id="">
-                <option value="">USD</option>
-                <option value="">EUR</option>
-                <option value="">TL</option>
+            <input value={amount} onChange={(e)=> setAmount(e.target.value)} type="number" className='currency-amount'/>
+            <select onChange={(e)=> setFromCurrency(e.target.value)}  className='from-currency-option'>
+                <option>USD</option>
+                <option>EUR</option>
+                <option>TRY</option>
             </select>
 
             <FaRegArrowAltCircleRight className='right-arrow'/>
 
-            <select className='to-currency-option' name="" id="">
-                <option value="">TL</option>
-                <option value="">USD</option>
-                <option value="">EUR</option>
+            <select onChange={(e)=> setToCurrency(e.target.value)} className='to-currency-option'>
+                <option>TRY</option>
+                <option>USD</option>
+                <option>EUR</option>
             </select>
 
-            <input type="number"  className='result'/>
+            <input value={result} onChange={(e) => setResult(e.target.value)} type="number"  className='result'/>
 
         </div>
         <div>
-            <button className='exchange-button'>EXCHANGE</button>
+            <button onClick={exchange} className='exchange-button'>EXCHANGE</button>
         </div>
 
     </div>
