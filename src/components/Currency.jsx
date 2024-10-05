@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import '../css/Currency.css'
+import React, { useState, useEffect  } from 'react';
+import '../css/Currency.css';
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import axios from 'axios';
 
@@ -14,6 +14,19 @@ function Currency() {
   const [fromCurrency,setFromCurrency] = useState('USD');
   const [toCurrency,setToCurrency] = useState('TRY');
   const [result,setResult] = useState(0);
+  const [currencies,setCurrencies] = useState([]);
+
+  useEffect(() => {
+    const fetchCurrencies = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}?apikey=${API_KEY}&base_currency=${fromCurrency}`);
+        setCurrencies(Object.keys(response.data.data)); 
+      } catch (error) {
+        console.error('Error fetching currencies:', error);
+      }
+    };
+    fetchCurrencies();
+  }, [fromCurrency]);
 
   const exchange = async () => {
     const response = await axios.get(`${BASE_URL}?apikey=${API_KEY}&base_currency=${fromCurrency}`);
@@ -30,18 +43,22 @@ function Currency() {
         
         <div className='currency-calculate'>
             <input value={amount} onChange={(e)=> setAmount(e.target.value)} type="number" className='currency-amount'/>
-            <select onChange={(e)=> setFromCurrency(e.target.value)}  className='from-currency-option'>
-                <option>USD</option>
-                <option>EUR</option>
-                <option>TRY</option>
+            <select value={fromCurrency} onChange={(e)=> setFromCurrency(e.target.value)}  className='from-currency-option'>
+              {currencies.map((currency) => (
+              <option key={currency} value={currency}>
+                {currency}
+              </option>
+            ))}
             </select>
 
             <FaRegArrowAltCircleRight className='right-arrow'/>
 
-            <select onChange={(e)=> setToCurrency(e.target.value)} className='to-currency-option'>
-                <option>TRY</option>
-                <option>USD</option>
-                <option>EUR</option>
+            <select value={toCurrency} onChange={(e)=> setToCurrency(e.target.value)} className='to-currency-option'>
+              {currencies.map((currency) => (
+              <option key={currency} value={currency}>
+                {currency}
+              </option>
+            ))}
             </select>
 
             <input value={result} onChange={(e) => setResult(e.target.value)} type="number"  className='result'/>
