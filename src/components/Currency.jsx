@@ -2,10 +2,10 @@ import React, { useState, useEffect  } from 'react';
 import '../css/Currency.css';
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import axios from 'axios';
+import { API_KEY } from '../../config';
 
 
 let BASE_URL =  "https://api.freecurrencyapi.com/v1/latest";
-let API_KEY = "your_api_key_from_https://freecurrencyapi.com/";
 
 
 function Currency() {
